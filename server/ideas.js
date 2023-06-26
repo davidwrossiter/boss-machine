@@ -1,0 +1,108 @@
+const express = require('express');
+const ideasRouter = express.Router();
+const dataBase = require('./db.js')
+
+
+ideasRouter.get('/', (req, res) => {
+    res.send(dataBase.getAllFromDatabase('ideas'))
+})
+
+ideasRouter.post('/', (req, res) => {
+    const newIdea = dataBase.addToDatabase('ideas', req.body);
+    res.status(201).send(newIdea);
+    //     const newMinion = dataBase.addToDatabase('minions', req.body);
+//     res.status(201).send(newMinion);
+})
+
+ideasRouter.get('/:ideaId', (req, res) => {
+    req.params.ideasValue = dataBase.getFromDatabaseById('ideas', req.params.ideaId)  
+    const ideaId = req.params.ideaId
+    if (isNaN(Number(ideaId)) === true) {
+        res.status(404)
+    } else if (req.params.ideasValue === null || req.params.ideasValue === undefined) {
+        res.status(404)
+    }
+    res.send(req.params.ideasValue)
+})
+
+ideasRouter.put('/:ideaId', (req, res) => {
+    req.body.id = req.params.ideaId
+    const updatedData = dataBase.updateInstanceInDatabase('ideas', req.body)
+    const ideaID = req.params.ideaId
+    if (isNaN(Number(ideaID)) === true) {
+        res.status(404)
+    } else if (updatedData === null) {
+        res.status(404)
+    }
+    res.send(updatedData)
+})
+
+ideasRouter.delete('/:ideaId', (req, res) => {
+    const deletedItem = dataBase.deleteFromDatabasebyId('ideas', req.params.ideaId)
+    const ideaID = req.params.ideaId
+    if (!deletedItem) {
+        res.status(500);
+    } else {
+        res.status(204);
+    }
+
+    if (ideaID > dataBase.getAllFromDatabase('ideas').length) {
+        res.status(404);
+    } else if (isNaN(Number(ideaID)) === true) {
+        res.status(404);
+    }
+    res.send()
+})
+
+module.exports = ideasRouter;
+
+
+// minionsRouter.get('/', (req, res) => {
+//     res.send(dataBase.getAllFromDatabase('minions'))
+// })
+
+// minionsRouter.post('/', (req, res) => {
+//     const newMinion = dataBase.addToDatabase('minions', req.body);
+//     res.status(201).send(newMinion);
+// })
+
+// minionsRouter.get('/:ideaID', (req, res, next) => {
+//     req.params.returnValue = dataBase.getFromDatabaseById('minions', req.params.ideaID)  
+//     const ideaID = req.params.ideaID
+//     if (isNaN(Number(ideaID)) === true) {
+//         res.status(404)
+//     } else if (req.params.returnValue === null || req.params.returnValue === undefined) {
+//         res.status(404)
+//     }
+//     res.send(req.params.returnValue)
+// })
+
+// minionsRouter.put('/:ideaID', (req, res) => {
+//     req.body.id = req.params.ideaID
+//     const updatedData = dataBase.updateInstanceInDatabase('minions', req.body)
+//     const ideaID = req.params.ideaID
+//     if (isNaN(Number(ideaID)) === true) {
+//         res.status(404)
+//     } else if (updatedData === null) {
+//         res.status(404)
+//     }
+//     res.send(updatedData)
+// })
+
+// minionsRouter.delete('/:ideaID', (req, res) => {
+//     const deletedItem = dataBase.deleteFromDatabasebyId('minions', req.params.ideaID)
+//     const ideaID = req.params.ideaID
+//     console.log(ideaID)
+//     if (!deletedItem) {
+//         res.status(500);
+//     } else {
+//         res.status(204);
+//     }
+
+//     if (ideaID > dataBase.getAllFromDatabase('minions').length) {
+//         res.status(404);
+//     } else if (isNaN(Number(ideaID)) === true) {
+//         res.status(404);
+//     }
+//     res.send()
+// })
